@@ -4,6 +4,160 @@
     box-sizing: border-box;
 }
 
+/* Authentication Overlay Styles */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.auth-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 320px;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-container h2 {
+    margin-bottom: 20px;
+    color: #007AFF;
+    font-size: 24px;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.auth-container input:focus {
+    outline: none;
+    border-color: #007AFF;
+    box-shadow: 0 0 5px rgba(0, 122, 255, 0.3);
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 12px;
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+.auth-container button:hover {
+    background: #0056CC;
+}
+
+.auth-switch {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.auth-switch a {
+    color: #007AFF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
+    font-size: 14px;
+    min-height: 20px;
+    font-weight: bold;
+}
+
+/* Login Overlay Styles */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 300px;
+    width: 90%;
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #007AFF;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.login-container button {
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.login-container button:hover {
+    background: #0056CC;
+}
+
+.error-message {
+    color: #F44336;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: url('WhatsApp Image 2025-12-22 at 11.44.09.jpeg') no-repeat center center / cover;
@@ -265,6 +419,29 @@ button:hover {
     font-size: 14px;
     display: flex;
     align-items: center;
+}
+
+.select-button {
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.select-button:hover {
+    background: #0056CC;
+}
+
+.select-button.selected {
+    background: #4CAF50;
+}
+
+.select-button.selected:hover {
+    background: #45a049;
 }
 
 .payment-record {

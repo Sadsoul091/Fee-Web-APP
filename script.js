@@ -182,6 +182,9 @@ class FeeManager {
                 const isDue = this.isPaymentDue(student);
                 const statusClass = isDue ? 'status-overdue' : 'status-paid';
                 const statusText = isDue ? 'Due' : 'Paid';
+                const isSelected = this.selectedStudents.has(student.id);
+                const selectButtonClass = isSelected ? 'select-button selected' : 'select-button';
+                const selectButtonText = isSelected ? '✓ Selected' : 'Select';
 
                 const monthlyFee = Number(student.monthlyFee) || 0;
                 const totalPaid = Number(student.totalPaid) || 0;
@@ -206,6 +209,7 @@ class FeeManager {
                         <span>Total Paid: ₹${totalPaid.toLocaleString()}</span>
                     </div>
                     <div class="action-buttons">
+                        <button class="${selectButtonClass}" onclick="app.toggleSelect(${student.id})">${selectButtonText}</button>
                         ${isDue ? `<button class="paid-button" onclick="app.recordPaymentModal(${student.id})">Record Payment</button>` : '<span class="paid-text">✓ Paid this month</span>'}
                     </div>
                 `;
@@ -230,6 +234,9 @@ class FeeManager {
             const nextDueDate = this.getNextDueDate(student.admissionDate);
             const monthlyFee = Number(student.monthlyFee) || 0;
             const totalPaid = Number(student.totalPaid) || 0;
+            const isSelected = this.selectedStudents.has(student.id);
+            const selectButtonClass = isSelected ? 'select-button selected' : 'select-button';
+            const selectButtonText = isSelected ? '✓ Selected' : 'Select';
 
             const card = document.createElement('div');
             card.className = 'student-card';
@@ -250,6 +257,7 @@ class FeeManager {
                     <span>Total Paid: ₹${totalPaid.toLocaleString()}</span>
                 </div>
                 <div class="action-buttons">
+                    <button class="${selectButtonClass}" onclick="app.toggleSelect(${student.id})">${selectButtonText}</button>
                     <button class="paid-button" onclick="app.recordPaymentModal(${student.id})">Record Payment</button>
                 </div>
             `;
@@ -262,6 +270,17 @@ class FeeManager {
         this.currentStudentId = studentId;
         document.getElementById('paymentStudentId').value = studentId;
         document.getElementById('paymentModal').style.display = 'block';
+    }
+
+    toggleSelect(studentId) {
+        if (this.selectedStudents.has(studentId)) {
+            this.selectedStudents.delete(studentId);
+        } else {
+            this.selectedStudents.add(studentId);
+        }
+        // Re-render to update selection state
+        this.renderStudents();
+        this.renderDueStudents();
     }
 
     getNextDueDate(admissionDate) {
@@ -392,11 +411,162 @@ class FeeManager {
         }
     }
 
+    openMessagingAppForPaid() {
+        const paidStudents = this.students.filter(student => !this.isPaymentDue(student));
+        if (paidStudents.length === 0) {
+            alert('No students with paid fees.');
+            return;
+        }
+
+        const message = document.getElementById('messageText').value.trim();
+        if (!message) {
+            alert('Please enter a message.');
+            return;
+        }
+
+        // Get all phone numbers from paid students
+        const phoneNumbers = paidStudents.map(student => student.phone).join(',');
+
+        // Create SMS URL that opens default messaging app
+        const smsUrl = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
+
+        try {
+            // Open the messaging app
+            window.open(smsUrl, '_blank');
+
+            const statusDiv = document.getElementById('messageStatus');
+            statusDiv.textContent = `Opening messaging app with ${paidStudents.length} recipients...`;
+
+            // Clear the message after a short delay
+            setTimeout(() => {
+                statusDiv.textContent = '';
+            }, 3000);
+
+        } catch (error) {
+            console.error('Error opening messaging app:', error);
+            alert('Unable to open messaging app. Please check your device settings.');
+        }
+    }
+
     checkOverduePayments() {
         const dueStudents = this.students.filter(student => this.isPaymentDue(student));
         if (dueStudents.length > 0) {
             console.log(`Found ${dueStudents.length} students with overdue payments`);
         }
+    }
+}
+
+// Authentication functions
+function showRegister() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+}
+
+function showLogin() {
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerError').textContent = '';
+    document.getElementById('loginError').textContent = '';
+}
+
+function login() {
+    const phone = document.getElementById('loginPhone').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const errorDiv = document.getElementById('loginError');
+
+    if (!phone || !password) {
+        errorDiv.textContent = 'Please fill in all fields';
+        return;
+    }
+
+    // Get users from localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.phone === phone && u.password === password);
+
+    if (user) {
+        // Store current user session
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        // Hide auth overlay and show app
+        document.getElementById('authOverlay').style.display = 'none';
+        document.querySelector('.app-container').style.display = 'block';
+        errorDiv.textContent = '';
+    } else {
+        errorDiv.textContent = 'Invalid phone number or password';
+    }
+}
+
+function register() {
+    const name = document.getElementById('registerName').value.trim();
+    const phone = document.getElementById('registerPhone').value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
+    const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+    const errorDiv = document.getElementById('registerError');
+
+    if (!name || !phone || !password || !confirmPassword) {
+        errorDiv.textContent = 'Please fill in all fields';
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        return;
+    }
+
+    if (password.length < 6) {
+        errorDiv.textContent = 'Password must be at least 6 characters long';
+        return;
+    }
+
+    // Get existing users
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // Check if phone number already exists
+    if (users.some(u => u.phone === phone)) {
+        errorDiv.textContent = 'Phone number already registered';
+        return;
+    }
+
+    // Create new user
+    const newUser = {
+        id: Date.now(),
+        name: name,
+        phone: phone,
+        password: password,
+        createdAt: new Date().toISOString()
+    };
+
+    // Add to users array
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Auto login after registration
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    document.getElementById('authOverlay').style.display = 'none';
+    document.querySelector('.app-container').style.display = 'block';
+
+    // Clear form
+    document.getElementById('registerForm').reset();
+    errorDiv.textContent = '';
+}
+
+function logout() {
+    localStorage.removeItem('currentUser');
+    document.querySelector('.app-container').style.display = 'none';
+    document.getElementById('authOverlay').style.display = 'flex';
+    showLogin();
+}
+
+function checkAuth() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+        document.getElementById('authOverlay').style.display = 'none';
+        document.querySelector('.app-container').style.display = 'block';
+    } else {
+        document.getElementById('authOverlay').style.display = 'flex';
+        document.querySelector('.app-container').style.display = 'none';
+        showLogin();
     }
 }
 
@@ -415,6 +585,10 @@ if ('serviceWorker' in navigator) {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
+    // Check authentication first
+    checkAuth();
+
+    // Initialize the app
     window.app = new FeeManager();
     await window.app.init();
 
