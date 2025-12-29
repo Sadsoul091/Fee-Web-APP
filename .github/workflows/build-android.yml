@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Fee Management App
 
 on:
   push:
