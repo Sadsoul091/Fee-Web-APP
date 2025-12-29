@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Management App - Launcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Fee Management App</h1>
+        <p>Real SMS notifications enabled</p>
+
+        <div id="serverStatus" class="status info">
+            Checking server status...
+        </div>
+
+        <div id="twilioStatus" class="status info">
+            Checking Twilio configuration...
+        </div>
+
+        <button id="launchBtn" onclick="launchApp()" disabled>
+            Launch App
+        </button>
+
+        <div id="instructions" style="text-align: left; margin-top: 20px; display: none;">
+            <h3>📋 Setup Instructions:</h3>
+            <ol>
+                <li>Make sure the server is running (<code>npm start</code>)</li>
+                <li>Set up your Twilio credentials as environment variables</li>
+                <li>Add students with phone numbers in international format (+1234567890)</li>
+                <li>Go to Messages page to send SMS notifications</li>
+            </ol>
+
+            <h3>🔧 Environment Variables (Windows):</h3>
+            <pre>set TWILIO_ACCOUNT_SID=your_sid_here
+set TWILIO_AUTH_TOKEN=your_token_here
+set TWILIO_PHONE_NUMBER=your_number_here</pre>
+        </div>
+    </div>
+
+    <script>
+        let serverRunning = false;
+        let twilioConfigured = false;
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    serverRunning = true;
+                    document.getElementById('serverStatus').className = 'status success';
+                    document.getElementById('serverStatus').textContent = '✅ Server is running';
+                } else {
+                    throw new Error('Server responded with error');
+                }
+            } catch (error) {
+                serverRunning = false;
+                document.getElementById('serverStatus').className = 'status error';
+                document.getElementById('serverStatus').textContent = '❌ Server not running. Run "npm start" first.';
+            }
+            updateLaunchButton();
+        }
+
+        async function checkTwilioStatus() {
+            try {
+                // Check if Twilio is configured by testing the endpoint with invalid data
+                const response = await fetch('/api/send-sms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ to: '', message: '' }) // Empty data to trigger validation
+                });
+
+                const data = await response.json();
+
+                if (response.status === 500 && data.error && data.error.includes('not configured')) {
+                    // Twilio not configured
+                    twilioConfigured = false;
+                    document.getElementById('twilioStatus').className = 'status error';
+                    document.getElementById('twilioStatus').textContent = '❌ Twilio not configured. Set environment variables.';
+                } else if (response.status === 400 && data.error && data.error.includes('required')) {
+                    // Twilio is configured (validation error means service is working)
+                    twilioConfigured = true;
+                    document.getElementById('twilioStatus').className = 'status success';
+                    document.getElementById('twilioStatus').textContent = '✅ Twilio configured (ready to send SMS)';
+                } else {
+                    // Other responses
+                    twilioConfigured = false;
+                    document.getElementById('twilioStatus').className = 'status error';
+                    document.getElementById('twilioStatus').textContent = '❌ Twilio configuration issue';
+                }
+            } catch (error) {
+                twilioConfigured = false;
+                document.getElementById('twilioStatus').className = 'status error';
+                document.getElementById('twilioStatus').textContent = '❌ Cannot connect to SMS service';
+            }
+            updateLaunchButton();
+        }
+
+        function updateLaunchButton() {
+            const btn = document.getElementById('launchBtn');
+            if (serverRunning) {
+                btn.disabled = false;
+                document.getElementById('instructions').style.display = 'block';
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        function launchApp() {
+            window.location.href = '/index.html';
+        }
+
+        // Check status on page load
+        window.addEventListener('load', () => {
+            checkServerStatus();
+            checkTwilioStatus();
+        });
+    </script>
+</body>
+</html>

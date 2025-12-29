@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Management App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Page 1: Add Student -->
+        <div id="addStudentPage" class="page active">
+            <header>
+                <h1>Fee Management</h1>
+                <button class="nav-btn" onclick="app.navigateToPage('studentListPage')">Student List</button>
+                <button class="nav-btn" onclick="app.navigateToPage('dueStudentsPage')">Due Students</button>
+                <button class="nav-btn" onclick="app.navigateToPage('sendMessagePage')">Send Message</button>
+                <button class="nav-btn" onclick="app.clearAllData()" style="background-color: #dc3545;">Clear All Data</button>
+            </header>
+            <div class="page-content">
+                <h2>Add New Student</h2>
+                <form id="studentForm">
+                    <input type="text" id="studentName" placeholder="Student Name" required>
+                    <input type="tel" id="studentPhone" placeholder="Phone Number" required>
+                    <input type="text" id="studentClass" placeholder="Class (e.g., 6, 7, 8)" required>
+                    <input type="date" id="admissionDate" required>
+                    <input type="number" id="monthlyFee" placeholder="Monthly Fee Amount" required>
+                    <button type="submit">Add Student</button>
+                </form>
+            </div>
+            <footer class="page-footer">
+                <p>&copy; 2024 The Soulens Tech Company. All Rights Reserved. | Developed with ❤️ for Educational Excellence</p>
+            </footer>
+        </div>
+
+        <!-- Page 2: Student List -->
+        <div id="studentListPage" class="page">
+            <header>
+                <button class="back-btn" onclick="app.navigateToPage('addStudentPage')">&larr; Back</button>
+                <h1>All Students</h1>
+                <button class="nav-btn" onclick="app.navigateToPage('dueStudentsPage')">Due Students</button>
+                <button class="nav-btn" onclick="app.navigateToPage('sendMessagePage')">Send Message</button>
+            </header>
+            <div class="page-content">
+                <div id="studentsList"></div>
+            </div>
+            <footer class="page-footer">
+                <p>&copy; 2024 The Soulens Tech Company. All Rights Reserved. | Developed with ❤️ for Educational Excellence</p>
+            </footer>
+        </div>
+
+        <!-- Page 3: Due Students -->
+        <div id="dueStudentsPage" class="page">
+            <header>
+                <button class="back-btn" onclick="app.navigateToPage('studentListPage')">&larr; Back</button>
+                <h1>Due Students</h1>
+                <button class="nav-btn" onclick="app.navigateToPage('studentListPage')">Student List</button>
+                <button class="nav-btn" onclick="app.navigateToPage('sendMessagePage')">Send Message</button>
+            </header>
+            <div class="page-content">
+                <div id="dueStudentsList"></div>
+            </div>
+            <footer class="page-footer">
+                <p>&copy; 2024 The Soulens Tech Company. All Rights Reserved. | Developed with ❤️ for Educational Excellence</p>
+            </footer>
+        </div>
+
+        <!-- Page 4: Send Message -->
+        <div id="sendMessagePage" class="page">
+            <header>
+                <button class="back-btn" onclick="app.navigateToPage('dueStudentsPage')">&larr; Back</button>
+                <h1>Send Message</h1>
+                <button class="nav-btn" onclick="app.navigateToPage('studentListPage')">Student List</button>
+                <button class="nav-btn" onclick="app.navigateToPage('dueStudentsPage')">Due Students</button>
+                <button onclick="app.openMessagingAppForUnpaid()" class="nav-btn">Send to All Unpaid</button>
+                <button onclick="app.openMessagingAppForSelected()" class="nav-btn secondary">Send to Selected</button>
+            </header>
+            <div class="page-content">
+                <div class="message-section">
+                    <textarea id="messageText" placeholder="Enter your message here..." rows="4"></textarea>
+                    <div id="messageStatus"></div>
+                </div>
+            </div>
+            <footer class="page-footer">
+                <p>&copy; 2024 The Soulens Tech Company. All Rights Reserved. | Developed with ❤️ for Educational Excellence</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal for payment -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Record Payment</h2>
+            <form id="paymentForm">
+                <input type="hidden" id="paymentStudentId">
+                <input type="number" id="paymentAmount" placeholder="Payment Amount" required>
+                <button type="submit">Record Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
