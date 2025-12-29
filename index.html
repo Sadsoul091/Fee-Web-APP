@@ -10,8 +10,10 @@
     <div class="app-container">
         <!-- Page 1: Add Student -->
         <div id="addStudentPage" class="page active">
+            <div class="top-header">
+                <h1>TANMOY PAUL'S MATHS ACADEMY</h1>
+            </div>
             <header>
-                <h1>Fee Management</h1>
                 <button class="nav-btn" onclick="app.navigateToPage('studentListPage')">Student List</button>
                 <button class="nav-btn" onclick="app.navigateToPage('dueStudentsPage')">Due Students</button>
                 <button class="nav-btn" onclick="app.navigateToPage('sendMessagePage')">Send Message</button>
@@ -35,9 +37,11 @@
 
         <!-- Page 2: Student List -->
         <div id="studentListPage" class="page">
+            <div class="top-header">
+                <h1>TANMOY PAUL'S MATHS ACADEMY</h1>
+            </div>
             <header>
                 <button class="back-btn" onclick="app.navigateToPage('addStudentPage')">&larr; Back</button>
-                <h1>All Students</h1>
                 <button class="nav-btn" onclick="app.navigateToPage('dueStudentsPage')">Due Students</button>
                 <button class="nav-btn" onclick="app.navigateToPage('sendMessagePage')">Send Message</button>
             </header>
@@ -51,9 +55,11 @@
 
         <!-- Page 3: Due Students -->
         <div id="dueStudentsPage" class="page">
+            <div class="top-header">
+                <h1>TANMOY PAUL'S MATHS ACADEMY</h1>
+            </div>
             <header>
                 <button class="back-btn" onclick="app.navigateToPage('studentListPage')">&larr; Back</button>
-                <h1>Due Students</h1>
                 <button class="nav-btn" onclick="app.navigateToPage('studentListPage')">Student List</button>
                 <button class="nav-btn" onclick="app.navigateToPage('sendMessagePage')">Send Message</button>
             </header>
@@ -67,9 +73,11 @@
 
         <!-- Page 4: Send Message -->
         <div id="sendMessagePage" class="page">
+            <div class="top-header">
+                <h1>TANMOY PAUL'S MATHS ACADEMY</h1>
+            </div>
             <header>
                 <button class="back-btn" onclick="app.navigateToPage('dueStudentsPage')">&larr; Back</button>
-                <h1>Send Message</h1>
                 <button class="nav-btn" onclick="app.navigateToPage('studentListPage')">Student List</button>
                 <button class="nav-btn" onclick="app.navigateToPage('dueStudentsPage')">Due Students</button>
                 <button onclick="app.openMessagingAppForUnpaid()" class="nav-btn">Send to All Unpaid</button>
