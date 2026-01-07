@@ -563,10 +563,30 @@ function checkAuth() {
     if (currentUser) {
         document.getElementById('authOverlay').style.display = 'none';
         document.querySelector('.app-container').style.display = 'block';
+        // Populate user info in side menu
+        populateUserInfo();
     } else {
         document.getElementById('authOverlay').style.display = 'flex';
         document.querySelector('.app-container').style.display = 'none';
         showLogin();
+    }
+}
+
+// Function to populate user info in side menu
+function populateUserInfo() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser) {
+        const userInfoDiv = document.getElementById('userInfo');
+        const firstName = currentUser.name.split(' ')[0];
+        const firstLetter = firstName.charAt(0).toUpperCase();
+
+        userInfoDiv.innerHTML = `
+            <div class="user-avatar">${firstLetter}</div>
+            <div class="user-details">
+                <div class="user-name">${currentUser.name}</div>
+                <div class="user-phone">${currentUser.phone}</div>
+            </div>
+        `;
     }
 }
 
@@ -583,8 +603,28 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// Side menu toggle function
+function toggleSideMenu() {
+    const sideMenu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    sideMenu.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
+    // Add default user if no users exist
+    if (!localStorage.getItem('users')) {
+        const defaultUser = {
+            id: 1,
+            name: 'Admin',
+            phone: '1234567890',
+            password: '123456',
+            createdAt: new Date().toISOString()
+        };
+        localStorage.setItem('users', JSON.stringify([defaultUser]));
+    }
+
     // Check authentication first
     checkAuth();
 
